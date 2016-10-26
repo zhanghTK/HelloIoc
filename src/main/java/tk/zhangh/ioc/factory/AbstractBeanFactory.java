@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * Created by ZhangHao on 2016/10/26.
  */
-public class AbstractBeanFactory implements BeanFactory {
+public abstract class AbstractBeanFactory implements BeanFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
 
@@ -42,7 +42,18 @@ public class AbstractBeanFactory implements BeanFactory {
      * @param beanDefinition Bean包装类
      */
     public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
-        logger.info("register bean:" + name);
+        Object object = doCreateBean(beanDefinition);
+        beanDefinition.setBean(object);
         beanContext.put(name, beanDefinition);
     }
+
+    /**
+     * 抽象方法，根据BeanDefinition实例化bean对象
+     *
+     * 由具体BeanFactory实现
+     *
+     * @param beanDefinition BeanDefinition
+     * @return bean实例对象
+     */
+    abstract protected Object doCreateBean(BeanDefinition beanDefinition);
 }

@@ -13,12 +13,17 @@ import org.slf4j.LoggerFactory;
 public class BeanDefinition {
     private static final Logger logger = LoggerFactory.getLogger(BeanDefinition.class);
 
+    private String beanName;  // bean名称（Id）
     private Object bean;  // bean实例
     private Class<?> beanClass;  // bean对应的Class
     private String beanClassName;  // bean对应的Class名称
 
-    public BeanDefinition(String beanClassName) {
-        setBeanClassName(beanClassName);
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
     }
 
     public Object getBean() {
@@ -60,6 +65,8 @@ public class BeanDefinition {
 
         BeanDefinition that = (BeanDefinition) o;
 
+        if (getBeanName() != null ? !getBeanName().equals(that.getBeanName()) : that.getBeanName() != null)
+            return false;
         if (getBean() != null ? !getBean().equals(that.getBean()) : that.getBean() != null) return false;
         if (getBeanClass() != null ? !getBeanClass().equals(that.getBeanClass()) : that.getBeanClass() != null)
             return false;
@@ -69,7 +76,8 @@ public class BeanDefinition {
 
     @Override
     public int hashCode() {
-        int result = getBean() != null ? getBean().hashCode() : 0;
+        int result = getBeanName() != null ? getBeanName().hashCode() : 0;
+        result = 31 * result + (getBean() != null ? getBean().hashCode() : 0);
         result = 31 * result + (getBeanClass() != null ? getBeanClass().hashCode() : 0);
         result = 31 * result + (getBeanClassName() != null ? getBeanClassName().hashCode() : 0);
         return result;
@@ -78,7 +86,8 @@ public class BeanDefinition {
     @Override
     public String toString() {
         return "BeanDefinition{" +
-                "bean=" + bean +
+                "beanName='" + beanName + '\'' +
+                ", bean=" + bean +
                 ", beanClass=" + beanClass +
                 ", beanClassName='" + beanClassName + '\'' +
                 '}';

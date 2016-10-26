@@ -19,8 +19,9 @@ public class AbstractBeanFactoryTest {
 
     @Test
     public void test_register_get_no_constructor_no_field_bean() throws Exception {
-        BeanDefinition beanDefinition = new BeanDefinition("tk.zhangh.ioc.beans.HelloWorldServiceImpl");
-        AbstractBeanFactory beanFactory = new AbstractBeanFactory();
+        BeanDefinition beanDefinition = new BeanDefinition();
+        beanDefinition.setBeanClassName("tk.zhangh.ioc.beans.HelloWorldServiceImpl");
+        AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
         beanFactory.registerBeanDefinition("helloWorldService", beanDefinition);
         HelloWorldService helloWorldService = (HelloWorldService)beanFactory.getBean("helloWorldService");
         Assert.assertEquals(helloWorldService.sayHello(), "hello world");
@@ -28,7 +29,7 @@ public class AbstractBeanFactoryTest {
 
     @Test
     public void test_get_not_register_bean() throws Exception {
-        AbstractBeanFactory beanFactory = new AbstractBeanFactory();
+        AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
         HelloWorldService helloWorldService = null;
         try {
             helloWorldService = (HelloWorldService)beanFactory.getBean("helloWorldService");
