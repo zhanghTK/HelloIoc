@@ -9,9 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 抽象Bean工厂
- * 提供基本的Bean注册，获取方法
  *
- * 要求Bean必须有无参数构造的方法，并且Bean本身是简单的，没有其他属性，不存在依赖依赖关系
+ * 提供基本的Bean注册，获取方法
  *
  * Created by ZhangHao on 2016/10/26.
  */
@@ -42,6 +41,7 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      * @param beanDefinition Bean包装类
      */
     public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
+        beanDefinition.setBeanName(name);
         Object object = doCreateBean(beanDefinition);
         beanDefinition.setBean(object);
         beanContext.put(name, beanDefinition);

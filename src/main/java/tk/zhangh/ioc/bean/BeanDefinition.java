@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Bean的包装类型
  *
- * 包含基本bean实例、bean实例对应的Class类信息
+ * 包含基本bean实例、bean实例对应的Class类信息、bean实例的基本类型（含String）属性
  *
  * Created by ZhangHao on 2016/10/26.
  */
@@ -17,6 +17,11 @@ public class BeanDefinition {
     private Object bean;  // bean实例
     private Class<?> beanClass;  // bean对应的Class
     private String beanClassName;  // bean对应的Class名称
+    private PropertyValues propertyValues;  // bean实例所有属性
+
+    public static Logger getLogger() {
+        return logger;
+    }
 
     public String getBeanName() {
         return beanName;
@@ -58,6 +63,14 @@ public class BeanDefinition {
         }
     }
 
+    public PropertyValues getPropertyValues() {
+        return propertyValues;
+    }
+
+    public void setPropertyValues(PropertyValues propertyValues) {
+        this.propertyValues = propertyValues;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,7 +83,9 @@ public class BeanDefinition {
         if (getBean() != null ? !getBean().equals(that.getBean()) : that.getBean() != null) return false;
         if (getBeanClass() != null ? !getBeanClass().equals(that.getBeanClass()) : that.getBeanClass() != null)
             return false;
-        return !(getBeanClassName() != null ? !getBeanClassName().equals(that.getBeanClassName()) : that.getBeanClassName() != null);
+        if (getBeanClassName() != null ? !getBeanClassName().equals(that.getBeanClassName()) : that.getBeanClassName() != null)
+            return false;
+        return !(getPropertyValues() != null ? !getPropertyValues().equals(that.getPropertyValues()) : that.getPropertyValues() != null);
 
     }
 
@@ -80,6 +95,7 @@ public class BeanDefinition {
         result = 31 * result + (getBean() != null ? getBean().hashCode() : 0);
         result = 31 * result + (getBeanClass() != null ? getBeanClass().hashCode() : 0);
         result = 31 * result + (getBeanClassName() != null ? getBeanClassName().hashCode() : 0);
+        result = 31 * result + (getPropertyValues() != null ? getPropertyValues().hashCode() : 0);
         return result;
     }
 
@@ -90,6 +106,7 @@ public class BeanDefinition {
                 ", bean=" + bean +
                 ", beanClass=" + beanClass +
                 ", beanClassName='" + beanClassName + '\'' +
+                ", propertyValues=" + propertyValues +
                 '}';
     }
 }
