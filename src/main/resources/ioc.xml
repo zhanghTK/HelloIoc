@@ -1,0 +1,7 @@
+<beans>
+    <bean name="helloWorldService" class="tk.zhangh.ioc.beans.HelloWorldServiceImpl">
+        <property name="anInt" value="123"/>
+        <property name="aDouble" value="3.14"/>
+        <property name="aString" value="HelloWorld."/>
+    </bean>
+</beans>
