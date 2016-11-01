@@ -13,11 +13,30 @@ import org.slf4j.LoggerFactory;
 public class BeanDefinition {
     private static final Logger logger = LoggerFactory.getLogger(BeanDefinition.class);
 
-    private String beanName;  // bean名称（Id）
-    private Object bean;  // bean实例
-    private Class<?> beanClass;  // bean对应的Class
-    private String beanClassName;  // bean对应的Class名称
-    private PropertyValues propertyValues;  // bean实例所有属性
+    /**
+     * bean名称（Id）
+     */
+    private String beanName;
+
+    /**
+     * bean实例
+     */
+    private Object bean;
+
+    /**
+     * bean对应的Class
+     */
+    private Class<?> beanClass;
+
+    /**
+     * bean对应的Class名称
+     */
+    private String beanClassName;
+
+    /**
+     * bean实例所有属性
+     */
+    private PropertyValues propertyValues = new PropertyValues();
 
     public static Logger getLogger() {
         return logger;
@@ -27,7 +46,7 @@ public class BeanDefinition {
         return beanName;
     }
 
-    public void setBeanName(String beanName) {
+    public void setBeanName(final String beanName) {
         this.beanName = beanName;
     }
 
@@ -35,7 +54,7 @@ public class BeanDefinition {
         return bean;
     }
 
-    public void setBean(Object bean) {
+    public void setBean(final Object bean) {
         this.bean = bean;
     }
 
@@ -43,7 +62,7 @@ public class BeanDefinition {
         return beanClass;
     }
 
-    public void setBeanClass(Class<?> beanClass) {
+    public void setBeanClass(final Class<?> beanClass) {
         this.beanClass = beanClass;
     }
 
@@ -51,7 +70,7 @@ public class BeanDefinition {
         return beanClassName;
     }
 
-    public void setBeanClassName(String beanClassName) {
+    public void setBeanClassName(final String beanClassName) {
         this.beanClassName = beanClassName;
         try {
             this.beanClass = Class.forName(beanClassName);
@@ -67,12 +86,12 @@ public class BeanDefinition {
         return propertyValues;
     }
 
-    public void setPropertyValues(PropertyValues propertyValues) {
+    public void setPropertyValues(final PropertyValues propertyValues) {
         this.propertyValues = propertyValues;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof BeanDefinition)) return false;
 

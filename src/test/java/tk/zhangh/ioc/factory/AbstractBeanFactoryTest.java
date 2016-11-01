@@ -6,6 +6,8 @@ import tk.zhangh.ioc.bean.BeanDefinition;
 import tk.zhangh.ioc.bean.PropertyValue;
 import tk.zhangh.ioc.bean.PropertyValues;
 import tk.zhangh.ioc.beans.HelloWorldService;
+import tk.zhangh.ioc.io.ResourceLoader;
+import tk.zhangh.ioc.xml.XmlBeanDefinitionReader;
 
 /**
  * 测试AbstractBeanFactory
@@ -15,7 +17,7 @@ import tk.zhangh.ioc.beans.HelloWorldService;
  * 1.BeanDefinition注册
  * 2.Bean实例获取过程
  * 3.Bean注册，注入基本（以及String）类型的属性
- *
+ * 4.使用xml方式注册bean，注入基本（以及String）类型的属性
  * Created by ZhangHao on 2016/10/26.
  */
 public class AbstractBeanFactoryTest {
@@ -45,6 +47,18 @@ public class AbstractBeanFactoryTest {
         beanFactory.registerBeanDefinition("helloWorldService", createBeanDefinitionWithProperties());
         HelloWorldService helloWorldService = (HelloWorldService)beanFactory.getBean("helloWorldService");
         Assert.assertEquals(helloWorldService.sayHello(), "hello world:anInt:123,aDouble:3.14,aString:string");
+    }
+
+    @Test
+    public void read_xml_register_bean() throws Exception {
+        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(new ResourceLoader());
+        xmlBeanDefinitionReader.loadBeanDefinitions("ioc.xml");
+        AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
+        for (String id : xmlBeanDefinitionReader.getBeanNames()) {
+            beanFactory.registerBeanDefinition(id, xmlBeanDefinitionReader.getBeanDefinition(id));
+        }
+        HelloWorldService helloWorldService = (HelloWorldService) beanFactory.getBean("helloWorldService");
+        helloWorldService.sayHello();
     }
 
     private PropertyValues createBasePropertyValues() {
