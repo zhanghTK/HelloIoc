@@ -1,4 +1,4 @@
-package tk.zhangh.ioc.xml;
+package tk.zhangh.ioc.io.xml;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tk.zhangh.ioc.bean.AbstractBeanDefinitionReader;
 import tk.zhangh.ioc.bean.BeanDefinition;
+import tk.zhangh.ioc.bean.BeanReference;
 import tk.zhangh.ioc.bean.PropertyValue;
+import tk.zhangh.ioc.io.AbstractBeanDefinitionReader;
 import tk.zhangh.ioc.io.ResourceLoader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +30,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         super(resourceLoader);
     }
 
+    /**
+     * 读取XML形式配置的beanDefinitions
+     * @param location bean信息定义位置
+     */
     @Override
     public void loadBeanDefinitions(final String location) {
         InputStream inputStream = getResourceLoader().getResource(location).getInputStream();
@@ -92,8 +97,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         String name = ele.getAttribute("name");
         String className = ele.getAttribute("class");
         BeanDefinition beanDefinition = new BeanDefinition();
-        processProperty(ele, beanDefinition);
         beanDefinition.setBeanClassName(className);
+        beanDefinition.setBeanName(name);
+        processProperty(ele, beanDefinition);
         register(name, beanDefinition);
     }
 
@@ -109,9 +115,27 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             if (node instanceof Element) {
                 Element propertyEle = (Element) node;
                 String name = propertyEle.getAttribute("name");
+                String ref = propertyEle.getAttribute("ref");
                 String value = propertyEle.getAttribute("value");
-                beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, value));
+                injectProperty(beanDefinition, name, ref, value);
             }
+        }
+    }
+
+    /**
+     * beanDefinition注入属性值
+     * @param beanDefinition beanDefinition
+     * @param name beanName
+     * @param ref bean引用
+     * @param value bean值
+     */
+    private void injectProperty(final BeanDefinition beanDefinition,
+                                final String name, final String ref, final String value) {
+        if (value != null && value.length() > 0) {
+            beanDefinition.addPropertyValue(new PropertyValue(name, value));
+        }
+        if (ref != null && ref.length() > 0) {
+            beanDefinition.addPropertyValue(new PropertyValue(name, new BeanReference(ref)));
         }
     }
 }

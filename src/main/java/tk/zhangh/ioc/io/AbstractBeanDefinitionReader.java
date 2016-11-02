@@ -1,8 +1,10 @@
-package tk.zhangh.ioc.bean;
+package tk.zhangh.ioc.io;
 
-import tk.zhangh.ioc.io.ResourceLoader;
+import tk.zhangh.ioc.bean.BeanDefinition;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 抽象BeanBeanDefinition读取类

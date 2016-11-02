@@ -3,6 +3,7 @@ package tk.zhangh.ioc.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tk.zhangh.ioc.bean.BeanDefinition;
+import tk.zhangh.ioc.bean.BeanReference;
 import tk.zhangh.ioc.bean.PropertyValue;
 import tk.zhangh.ioc.bean.PropertyValues;
 
@@ -29,8 +30,9 @@ public class AutowireCapableBeanFactory extends AbstractBeanFactory {
     protected Object doCreateBean(final BeanDefinition beanDefinition) {
         logger.info("instantiate BeanDefinition:" + beanDefinition.getBeanName());
         try {
-            Object object = createBeanInstance(beanDefinition.getBeanClass());
-            return setProperties(object, beanDefinition.getPropertyValues());
+            Object bean = createBeanInstance(beanDefinition.getBeanClass());
+            beanDefinition.setBean(bean);
+            return setProperties(bean, beanDefinition.getPropertyValues());
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("init bean error:" + beanDefinition.getBeanName());
@@ -60,15 +62,17 @@ public class AutowireCapableBeanFactory extends AbstractBeanFactory {
      */
     private Object setProperties(final Object bean,
                                  final PropertyValues propertyValues) {
-        if (propertyValues == null) {
-            return bean;
-        }
         Class clazz = bean.getClass();
         for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
             try {
                 Field field = clazz.getDeclaredField(propertyValue.getName());
                 field.setAccessible(true);
-                field.set(bean, getRealTypeValue(field.getType(), propertyValue.getValue()));
+                Object value = propertyValue.getValue();
+                if (value instanceof BeanReference) {
+                    BeanReference beanReference = (BeanReference) value;
+                    value = getBean(beanReference.getName());
+                }
+                field.set(bean, getRealTypeValue(field.getType(), value));
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("bean set properties error:" + propertyValue.getName());
@@ -86,7 +90,10 @@ public class AutowireCapableBeanFactory extends AbstractBeanFactory {
      */
     private Object getRealTypeValue(final Class type, final Object value) {
         String valueStr = String.valueOf(value);
-        if (type == byte.class) {
+        if (type == BeanReference.class) {
+            BeanReference beanReference = (BeanReference) value;
+            return getBean(beanReference.getName());
+        } if (type == byte.class) {
             return Byte.parseByte(valueStr);
         } if (type == short.class) {
             return Short.parseShort(valueStr);

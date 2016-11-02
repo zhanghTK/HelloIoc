@@ -1,4 +1,4 @@
-package tk.zhangh.ioc.bean;
+package tk.zhangh.ioc.io;
 
 /**
  * BeanDefinition读取接口

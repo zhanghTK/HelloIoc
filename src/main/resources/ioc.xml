@@ -4,4 +4,13 @@
         <property name="aDouble" value="3.14"/>
         <property name="aString" value="HelloWorld."/>
     </bean>
+
+    <bean name="outputService" class="tk.zhangh.ioc.beans.OutputService">
+        <property name="helloWorldService" ref="helloWorldOutputService"/>
+    </bean>
+
+    <bean name="helloWorldOutputService" class="tk.zhangh.ioc.beans.HelloWorldOutputServiceImpl">
+        <property name="name" value="helloWorldOutputService"/>
+        <property name="outputService" ref="outputService"/>
+    </bean>
 </beans>

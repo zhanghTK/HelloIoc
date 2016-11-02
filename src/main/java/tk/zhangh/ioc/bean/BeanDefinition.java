@@ -38,6 +38,14 @@ public class BeanDefinition {
      */
     private PropertyValues propertyValues = new PropertyValues();
 
+    /**
+     * bean实例添加属性
+     * @param propertyValue 属性
+     */
+    public void addPropertyValue(final PropertyValue propertyValue) {
+        propertyValues.addPropertyValue(propertyValue);
+    }
+
     public static Logger getLogger() {
         return logger;
     }
@@ -73,8 +81,7 @@ public class BeanDefinition {
     public void setBeanClassName(final String beanClassName) {
         this.beanClassName = beanClassName;
         try {
-            this.beanClass = Class.forName(beanClassName);
-            bean = beanClass.newInstance();
+            setBeanClass(Class.forName(beanClassName));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("init bean error," + beanClassName, e);

@@ -6,21 +6,25 @@ import tk.zhangh.ioc.bean.BeanDefinition;
 import tk.zhangh.ioc.bean.PropertyValue;
 import tk.zhangh.ioc.bean.PropertyValues;
 import tk.zhangh.ioc.beans.HelloWorldService;
+import tk.zhangh.ioc.beans.OutputService;
 import tk.zhangh.ioc.io.ResourceLoader;
-import tk.zhangh.ioc.xml.XmlBeanDefinitionReader;
+import tk.zhangh.ioc.io.xml.XmlBeanDefinitionReader;
 
 /**
- * 测试AbstractBeanFactory
- * 要求Bean必须有无参数构造的方法，并且Bean只有简单属性，不存在依赖依赖关系
+ * 测试AutowireCapableBeanFactory
+ * 要求Bean必须有无参数构造的方法
  *
  * 测试内容
- * 1.BeanDefinition注册
- * 2.Bean实例获取过程
- * 3.Bean注册，注入基本（以及String）类型的属性
- * 4.使用xml方式注册bean，注入基本（以及String）类型的属性
- * Created by ZhangHao on 2016/10/26.
+ * 1.手动注册简单BeanDefinition
+ * 2.获取未注册的BeanDefinition
+ * 3.手动注册BeanDefinition（包含基本类型属性）
+ * 4.使用xml方式注册BeanDefinition（包含基本属性以及bean属性）
+ * 5.使用xml方式注册BeanDefinition，在获取bean前与初始化
+ *
+ *
+ * Created by ZhangHao on 2016/11/2.
  */
-public class AbstractBeanFactoryTest {
+public class AutowireCapableBeanFactoryTest {
 
     @Test
     public void register_get_no_constructor_no_field_bean() throws Exception {
@@ -42,7 +46,7 @@ public class AbstractBeanFactoryTest {
     }
 
     @Test
-    public void register_get_no_constructor_many_field_bean() throws Exception {
+    public void register_get_no_constructor_base_field_bean() throws Exception {
         AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
         beanFactory.registerBeanDefinition("helloWorldService", createBeanDefinitionWithProperties());
         HelloWorldService helloWorldService = (HelloWorldService)beanFactory.getBean("helloWorldService");
@@ -50,15 +54,28 @@ public class AbstractBeanFactoryTest {
     }
 
     @Test
-    public void read_xml_register_bean() throws Exception {
+    public void read_xml_register_bean_with_bean_field() throws Exception {
         XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(new ResourceLoader());
         xmlBeanDefinitionReader.loadBeanDefinitions("ioc.xml");
         AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
         for (String id : xmlBeanDefinitionReader.getBeanNames()) {
             beanFactory.registerBeanDefinition(id, xmlBeanDefinitionReader.getBeanDefinition(id));
         }
-        HelloWorldService helloWorldService = (HelloWorldService) beanFactory.getBean("helloWorldService");
-        helloWorldService.sayHello();
+        HelloWorldService helloWorldService = (HelloWorldService) beanFactory.getBean("helloWorldOutputService");
+        Assert.assertEquals(helloWorldService.sayHello(), "helloWorldOutputService");
+    }
+
+    @Test
+    public void read_xml_register_bean_before_get_bean_pre_instantiate() throws Exception {
+        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(new ResourceLoader());
+        xmlBeanDefinitionReader.loadBeanDefinitions("ioc.xml");
+        AbstractBeanFactory beanFactory = new AutowireCapableBeanFactory();
+        for (String id : xmlBeanDefinitionReader.getBeanNames()) {
+            beanFactory.registerBeanDefinition(id, xmlBeanDefinitionReader.getBeanDefinition(id));
+        }
+        beanFactory.preInstantiateSingletons();
+        OutputService outputService = (OutputService) beanFactory.getBean("outputService");
+        Assert.assertEquals(outputService.output("hello world"), "hello world");
     }
 
     private PropertyValues createBasePropertyValues() {

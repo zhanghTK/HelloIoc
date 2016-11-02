@@ -18,7 +18,9 @@ public abstract class AbstractBeanFactory implements BeanFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
 
-    // 缓存Bean实例
+    /**
+     * 缓存读取的bean
+     */
     private Map<String, BeanDefinition> beanContext = new ConcurrentHashMap<>();
 
     /**
@@ -26,13 +28,17 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      * @param name bean名称
      * @return bean实例
      */
-    public Object getBean(String name) {
+    public Object getBean(final String name) {
         BeanDefinition beanDefinition = beanContext.get(name);
         if (beanDefinition == null) {
             logger.error("get bean error:" + name);
             throw new RuntimeException("not found bean:" + name);
         }
-        return beanDefinition.getBean();
+        Object bean = beanDefinition.getBean();
+        if (bean == null) {
+            bean = doCreateBean(beanDefinition);
+        }
+        return bean;
     }
 
     /**
@@ -40,11 +46,18 @@ public abstract class AbstractBeanFactory implements BeanFactory {
      * @param name Bean id，在容器内唯一
      * @param beanDefinition Bean包装类
      */
-    public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
-        beanDefinition.setBeanName(name);
-        Object object = doCreateBean(beanDefinition);
-        beanDefinition.setBean(object);
+    public void registerBeanDefinition(final String name, final BeanDefinition beanDefinition) {
         beanContext.put(name, beanDefinition);
+    }
+
+    /**
+     * 与实例化Bean工厂内的所有未实例化bean
+     */
+    public void preInstantiateSingletons() {
+        for (Map.Entry<String, BeanDefinition> beanDefinitionEntry : beanContext.entrySet()) {
+            String beanName = beanDefinitionEntry.getKey();
+            getBean(beanName);
+        }
     }
 
     /**

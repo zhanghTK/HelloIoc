@@ -3,6 +3,7 @@ package tk.zhangh.ioc.xml;
 import org.junit.Assert;
 import org.junit.Test;
 import tk.zhangh.ioc.io.ResourceLoader;
+import tk.zhangh.ioc.io.xml.XmlBeanDefinitionReader;
 
 import java.util.Set;
 
