@@ -9,8 +9,11 @@ import java.net.URL;
  */
 public class ResourceLoader {
 
-    public Resource getResource(String location) {
+    public Resource getResource(final String location) {
         URL resource = this.getClass().getClassLoader().getResource(location);
+        if (resource == null) {
+            throw new RuntimeException("未找到文件" + location);
+        }
         return new UrlResource(resource);
     }
 }
